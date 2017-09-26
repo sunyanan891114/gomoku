@@ -6,9 +6,7 @@ export default class drawHelper {
 
   drawBoard(num, gridWidth) {
     const width = gridWidth * num;
-    this.ctx.fillStyle = '#ffc007';
 
-    this.ctx.fillRect(0, 0, width, width);
     for (let i = 1; i < num; i++) {
       this.ctx.moveTo(0, i * gridWidth);
       this.ctx.lineTo(width, i * gridWidth);
@@ -19,10 +17,11 @@ export default class drawHelper {
     }
   }
 
-  drawPiece(cx, cy, color, gridWidth) {
-    this.ctx.fillStyle = color;
-    this.ctx.beginPath();
-    this.ctx.arc(cx * gridWidth, cy * gridWidth, gridWidth / 2 - 3, 0, 2 * Math.PI);
-    this.ctx.fill()
+  drawPiece(cx, cy, imageSrc, gridWidth) {
+    const pieceImage = new Image();
+    pieceImage.src = imageSrc;
+    pieceImage.onload = () => {
+      this.ctx.drawImage(pieceImage, cx * gridWidth - gridWidth / 2, cy * gridWidth - gridWidth / 2, gridWidth, gridWidth);
+    };
   }
 }

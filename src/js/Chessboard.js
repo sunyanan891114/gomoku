@@ -51,7 +51,7 @@ export default class ChessBoard {
     }
     this.step += 1;
     const player = players[this.step % 2];
-    this.brush.drawPiece(cx, cy, player.color, this.gridWidth);
+    this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
     this.setPiece(cx, cy, player.value);
   }
 

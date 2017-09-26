@@ -1,9 +1,12 @@
+import blackPiece from '../asset/piece-black.png';
+import whitePiece from '../asset/piece-white.png';
+
 export default [{
   value: 1,
-  color: '#fff',
+  image: whitePiece,
   name: '白棋'
 },{
   value: 2,
   color: '#000',
-  name: '黑棋'
+  image: blackPiece
 }]
