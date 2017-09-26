@@ -1,22 +1,22 @@
 import drawHelper from './drawHelper';
+import players from './playerConfig';
 
 export default class ChessBoard {
   constructor(n) {
     this.num = n;
     this.gridWidth = 35;
     this.board = [];
-    this.lastPiece = {
-      x: 0,
-      y: 0,
-      value: 0
-    };
-    this.icon = 0;
+    this.step = 0;
     this.canvas = document.getElementById('chessboard-canvas');
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
     this.bindEvents();
     this.initBoard();
+    this.isLx = this.isLx.bind(this);
+    this.isLy = this.isLy.bind(this);
+    this.isX = this.isX.bind(this);
+    this.isY = this.isY.bind(this);
   }
 
   initBoard() {
@@ -27,16 +27,6 @@ export default class ChessBoard {
       }
     }
     this.brush.drawBoard(this.num, this.gridWidth);
-  }
-
-  setPiece(x, y, value) {
-    this.board[x][y] = value;
-    this.lastPiece = {x, y, value}
-  }
-
-  regret() {
-    const piece = this.lastPiece;
-    this.board[piece.x][piece.y] = 0;
   }
 
   bindEvents() {
@@ -54,122 +44,91 @@ export default class ChessBoard {
       return;
     }
     const cx = Math.round(x / this.gridWidth),
-          cy = Math.round(y / this.gridWidth);
-    let color;
-    if (this.board[cy][cx] !== 0) {
+      cy = Math.round(y / this.gridWidth);
+    if (this.board[cx][cy] !== 0) {
+      alert("当前位置已有棋子，请不要重复落子哦");
       return;
     }
-    this.icon += 1;
-    if (this.icon % 2 === 0) {
-      color = '#fff';
-      this.board[cy][cx] = 1;
-      this.judge(cx, cy, this.board[cy][cx])
-    }
-    if (this.icon % 2 === 1) {
-      color = 'black';
-      this.board[cy][cx] = 2;
-      this.judge(cx, cy, this.board[cy][cx]);
-    }
-    this.brush.drawPiece(cx, cy, color, this.gridWidth);
+    this.step += 1;
+    const player = players[this.step % 2];
+    this.brush.drawPiece(cx, cy, player.color, this.gridWidth);
+    this.setPiece(cx, cy, player.value);
+  }
+
+  setPiece(cx, cy, value) {
+    this.board[cx][cy] = value;
+    this.judge(cx, cy, value);
+  }
+
+  judgeAlgorithms() {
+    return [this.isX, this.isY, this.isLx, this.isLy]
   }
 
   judge(x, y, colNum) {
-    this.isX(colNum, x, y);
-    this.isY(colNum, x, y);
-    this.isLx(colNum, x, y);
-    this.isLy(colNum, x, y);
+    this.judgeAlgorithms().map((algorithm) => {
+      algorithm(colNum, x, y);
+    });
   }
 
-  //*设置一个count，为当前颜色棋子的数量.
-  //点击向各方向查询，如果为同一颜色便++
+  calculatePieceLine(flag, count, pieceValue, calculateValue) {
+    if (!flag) return { count, flag };
+    if (pieceValue === calculateValue) { count++; }
+    else { flag = false; }
+    return { count, flag };
+  }
+
+  getDynamicPosition(x, y) {
+    if (x < 0 || x >= this.num || y < 0 || y >= this.num) {
+      return 0;
+    }
+    return this.board[x][y];
+  }
+
+  getMaxCount(minusXGenerator, minusYGenerator, plusXGenerator, plusYGenerator, x, y, colNum) {
+    let count = 0, minus = true, plus = true;
+    for (let i = 1; i <= 5; i++) {
+      let result = this.calculatePieceLine(minus, count, this.getDynamicPosition(minusXGenerator(x, i), minusYGenerator(y, i)), colNum);
+      count = result.count;
+      minus = result.flag;
+
+      result = this.calculatePieceLine(plus, count, this.getDynamicPosition(plusXGenerator(x, i), plusYGenerator(y, i)), colNum);
+      count = result.count;
+      plus = result.flag;
+    }
+    this.success(count, colNum);
+  }
+
+  valueGenerator(x, i) {
+    return x;
+  }
+
   isX(colNum, x, y) {
-    var count = 0;
-    // console.log('当前colNum颜色为'+colNum+',x:'+x+',y:'+y)
-    for (var i = x; i >= 0; i--) {
-      if (this.board[y][i] === colNum) {
-        count++;
-      } else {
-        i = -1;
-      }
-    }
-    for (var i = x; i <= this.num; i++) {
-      if (this.board[y][i] === colNum) {
-        count++;
-      } else {
-        i = 100;
-      }
-    }
-    this.success(count, colNum)
+    this.getMaxCount((x, i) => {return x - i}, this.valueGenerator,
+      (x, i) => {return x + i}, this.valueGenerator, x, y, colNum);
   }
 
   isY(colNum, x, y) {
-    var count = 0;
-    // console.log('当前colNum颜色为'+colNum+',x:'+x+',y:'+y)
-    for (var i = y; i >= 0; i--) {
-      if (this.board[i][x] === colNum) {
-        count++;
-      } else {
-        i = -1;
-      }
-    }
-    for (var i = y; i <= this.num; i++) {
-      if (this.board[i][x] === colNum) {
-        count++;
-      } else {
-        i = 100;
-      }
-    }
-    this.success(count, colNum)
+    this.getMaxCount(this.valueGenerator, (x, i) => {return x - i}, this.valueGenerator,
+      (x, i) => {return x + i}, x, y, colNum);
   }
 
   isLx(colNum, x, y) {
-    var count = 0;
-    // console.log('当前colNum颜色为'+colNum+',x:'+x+',y:'+y)
-    for (var i = x, k = y; i >= 0 && k >= 0; i--, k--) {
-      if (this.board[k][i] === colNum) {
-        count++;
-      } else {
-        i = -1;
-      }
-    }
-    for (var i = x, k = y; i <= this.num && k <= this.num; i++, k++) {
-      if (this.board[k][i] === colNum) {
-        count++;
-      } else {
-        i = 100;
-      }
-    }
-    this.success(count, colNum)
+    this.getMaxCount((x, i) => {return x - i}, (y, i) => {return y - i}, (x, i) => {return x + i},
+      (y, i) => {return y + i}, x, y, colNum);
   }
 
   isLy(colNum, x, y) {
-    var count = 0;
-    // console.log('当前colNum颜色为'+colNum+',x:'+x+',y:'+y)
-    for (var i = x, k = y; i >= 0 && k <= this.num; i--, k++) {
-      if (this.board[k][i] === colNum) {
-        count++;
-        console.log('count:' + count)
-      } else {
-        i = -1;
-      }
-    }
-    for (var i = x, k = y; i <= this.num && k >= 0; i++, k--) {
-      if (this.board[k][i] === colNum) {
-        count++;
-      } else {
-        i = 100;
-      }
-    }
-    this.success(count, colNum)
+    this.getMaxCount((x, i) => {return x - i}, (y, i) => {return y + i}, (x, i) => {return x + i},
+      (y, i) => {return y - i}, x, y, colNum);
   }
 
   success(count, colNum) {
-    if (count >= 6) {
-      if (colNum === 2) {
-        alert('黑棋获胜');
-      } else {
-        alert('白棋获胜');
-      }
+    if (count >= 4) {
+      players.map((player) => {
+        if(player.value === colNum) {
+          alert(`${player.name}获胜`);
+        }
+      });
       this.canvas.removeEventListener('click', this.calculatePiecePosition);
     }
   }
