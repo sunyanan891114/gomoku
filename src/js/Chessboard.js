@@ -57,18 +57,18 @@ export default class ChessBoard {
     }
     const cx = Math.round(x / this.gridWidth),
       cy = Math.round(y / this.gridWidth);
-    this.completeBoard(cx, cy);
-    if (this.isSingleMode()) {
-      const computerPiece = this.computerAI.nextStep(this.board);
-      this.completeBoard(computerPiece.x, computerPiece.y);
+    if (this.board[cx][cy] === 0) {
+      this.completeBoard(cx, cy);
+      if (this.isSingleMode()) {
+        const computerPiece = this.computerAI.nextStep(this.board);
+        this.completeBoard(computerPiece.x, computerPiece.y);
+      }
+    } else {
+      alert("当前位置已有棋子，请不要重复落子哦");
     }
   }
 
   completeBoard(cx, cy) {
-    if (this.board[cx][cy] !== 0) {
-      alert("当前位置已有棋子，请不要重复落子哦");
-      return;
-    }
     this.step += 1;
     const player = players[this.step % 2];
     this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
