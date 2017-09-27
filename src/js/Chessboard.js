@@ -1,5 +1,6 @@
 import drawHelper from './drawHelper';
 import players from './playerConfig';
+import computerAI from './computerAI';
 
 export default class ChessBoard {
   constructor(n) {
@@ -11,12 +12,14 @@ export default class ChessBoard {
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
+    this.computerAI = new computerAI();
     this.bindEvents();
     this.initBoard();
     this.isLx = this.isLx.bind(this);
     this.isLy = this.isLy.bind(this);
     this.isX = this.isX.bind(this);
     this.isY = this.isY.bind(this);
+    this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
   }
 
   initBoard() {
@@ -45,6 +48,12 @@ export default class ChessBoard {
     }
     const cx = Math.round(x / this.gridWidth),
       cy = Math.round(y / this.gridWidth);
+    this.completeBoard(cx, cy);
+    const computerPiece = this.computerAI.nextStep(this.board);
+    this.completeBoard(computerPiece.x, computerPiece.y);
+  }
+
+  completeBoard(cx, cy) {
     if (this.board[cx][cy] !== 0) {
       alert("当前位置已有棋子，请不要重复落子哦");
       return;

@@ -7,6 +7,6 @@ export default [{
   name: '白棋'
 },{
   value: 2,
-  color: '#000',
+  name: '黑棋',
   image: blackPiece
 }]

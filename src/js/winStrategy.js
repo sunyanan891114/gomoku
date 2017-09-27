@@ -49,5 +49,5 @@ export const calculateWinNums = () => {
     }
   }
 
-  return wins;
-}
+  return {wins, count};
+};
