@@ -3,7 +3,7 @@ import players from './playerConfig';
 import computerAI from './computerAI';
 
 export default class ChessBoard {
-  constructor(n) {
+  constructor(n, mode) {
     this.num = n;
     this.gridWidth = 35;
     this.board = [];
@@ -12,7 +12,10 @@ export default class ChessBoard {
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
-    this.computerAI = new computerAI(n);
+    this.mode = mode;
+    if (this.isSingleMode()) {
+      this.computerAI = new computerAI(n);
+    }
     this.bindEvents();
     this.initBoard();
     this.isLx = this.isLx.bind(this);
@@ -20,6 +23,10 @@ export default class ChessBoard {
     this.isX = this.isX.bind(this);
     this.isY = this.isY.bind(this);
     this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
+  }
+
+  isSingleMode() {
+    return this.mode === 'single';
   }
 
   initBoard() {
@@ -49,8 +56,10 @@ export default class ChessBoard {
     const cx = Math.round(x / this.gridWidth),
       cy = Math.round(y / this.gridWidth);
     this.completeBoard(cx, cy);
-    const computerPiece = this.computerAI.nextStep(this.board);
-    this.completeBoard(computerPiece.x, computerPiece.y);
+    if (this.isSingleMode()) {
+      const computerPiece = this.computerAI.nextStep(this.board);
+      this.completeBoard(computerPiece.x, computerPiece.y);
+    }
   }
 
   completeBoard(cx, cy) {
