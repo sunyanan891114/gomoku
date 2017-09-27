@@ -80,3 +80,10 @@ header > h1 {
     margin: 20px;
   }
 }
+
+#regret {
+  @include button;
+  position: absolute;
+  bottom: 20px;
+  left: calc(50% + 301px);
+}

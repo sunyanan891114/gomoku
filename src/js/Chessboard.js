@@ -13,6 +13,7 @@ export default class ChessBoard {
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
     this.mode = mode;
+    this.history = [];
     if (this.isSingleMode()) {
       this.computerAI = new computerAI(n);
     }
@@ -21,7 +22,7 @@ export default class ChessBoard {
     this.isX = this.isX.bind(this);
     this.isY = this.isY.bind(this);
     this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
-
+    this.regret = this.regret.bind(this);
     this.initBoard();
   }
 
@@ -43,6 +44,23 @@ export default class ChessBoard {
 
   bindEvents() {
     this.canvas.addEventListener('click', this.calculatePiecePosition);
+    document.getElementById('regret').addEventListener('click', this.regret);
+  }
+
+  regret() {
+    if(this.isSingleMode()) {
+      this.resetPiece();
+      this.resetPiece();
+    } else {
+      this.resetPiece();
+    }
+  }
+
+  resetPiece() {
+    let piece = this.history[this.step];
+    this.brush.clearPiece(piece.x, piece.y, this.gridWidth);
+    this.board[piece.x][piece.y] = 0;
+    this.step--;
   }
 
   isPieceInBoard(x, y) {
@@ -73,6 +91,7 @@ export default class ChessBoard {
     const player = players[this.step % 2];
     this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
     this.setPiece(cx, cy, player.value);
+    this.history[this.step] = {x: cx, y:cy}
   }
 
   setPiece(cx, cy, value) {
