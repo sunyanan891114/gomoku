@@ -32,12 +32,15 @@ export default class ComputerAI {
 
     for (let i = 0; i < 15; i++) {
       for (let j = 0; j < 15; j++) {
-        if (chessboard[i][j] === 0) {
-          for (let k = 0; k < this.count; k++) { // 将可能赢的情况都加1
-            if (this.wins[i][j][k]) {
+        for (let k = 0; k < this.count; k++) { // 将可能赢的情况都加1
+          if (this.wins[i][j][k]) {
+            if(chessboard[i][j] === 1) {
               myWin[k]++;
-              _compWin[k] = computerWin[k]; // 为悔棋做准备
               computerWin[k] = 6;//
+            } else if(chessboard[i][j] === 2) {
+              myWin[k] = 6;
+              _compWin[k] = computerWin[k]; // 为悔棋做准备
+              computerWin[k]++;//
             }
           }
         }
