@@ -1,10 +1,11 @@
 import {calculateWinNums} from './winStrategy';
 
 export default class ComputerAI {
-  constructor() {
+  constructor(num) {
     const result = calculateWinNums();
     this.wins = result.wins;
     this.count = result.count;
+    this.num = num;
   }
 
   nextStep(chessboard) {
@@ -21,17 +22,17 @@ export default class ComputerAI {
       _compWin[i] = 0;
     }
     let max = 0, u = 0, v = 0;
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < this.num; i++) {
       myScore[i] = [];
       computerScore[i] = [];
-      for (let j = 0; j < 15; j++) {
+      for (let j = 0; j < this.num; j++) {
         myScore[i][j] = 0;
         computerScore[i][j] = 0;
       }
     }
 
-    for (let i = 0; i < 15; i++) {
-      for (let j = 0; j < 15; j++) {
+    for (let i = 0; i < this.num; i++) {
+      for (let j = 0; j < this.num; j++) {
         for (let k = 0; k < this.count; k++) { // 将可能赢的情况都加1
           if (this.wins[i][j][k]) {
             if(chessboard[i][j] === 1) {
@@ -46,8 +47,8 @@ export default class ComputerAI {
         }
       }
     }
-    for (let i = 0; i < 15; i++) {
-      for (let j = 0; j < 15; j++) {
+    for (let i = 0; i < this.num; i++) {
+      for (let j = 0; j < this.num; j++) {
         if (chessboard[i][j] == 0) {
           for (let k = 0; k < this.count; k++) {
             if (this.wins[i][j][k]) {

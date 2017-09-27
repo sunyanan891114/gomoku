@@ -12,7 +12,7 @@ export default class ChessBoard {
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
-    this.computerAI = new computerAI();
+    this.computerAI = new computerAI(n);
     this.bindEvents();
     this.initBoard();
     this.isLx = this.isLx.bind(this);
