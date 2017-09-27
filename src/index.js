@@ -1,4 +1,5 @@
 import Chessboard from './js/Chessboard';
+import {hideModal} from './js/modal';
 import './styles/styles.scss';
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,8 +15,4 @@ const startSingleGame = () => {
 const startMultipleGame = () => {
   new Chessboard(15, 'multiple');
   hideModal();
-};
-
-const hideModal = () => {
-  document.getElementsByClassName('modal')[0].className = "modal";
 };

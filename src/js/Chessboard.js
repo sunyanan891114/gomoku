@@ -1,12 +1,12 @@
 import drawHelper from './drawHelper';
 import players from './playerConfig';
 import computerAI from './computerAI';
+import {showModal} from './modal';
 
 export default class ChessBoard {
   constructor(n, mode) {
     this.num = n;
     this.gridWidth = 35;
-    this.board = [];
     this.step = 0;
     this.canvas = document.getElementById('chessboard-canvas');
     this.canvas.width = this.gridWidth * this.num;
@@ -16,7 +16,6 @@ export default class ChessBoard {
     if (this.isSingleMode()) {
       this.computerAI = new computerAI(n);
     }
-    this.bindEvents();
     this.initBoard();
     this.isLx = this.isLx.bind(this);
     this.isLy = this.isLy.bind(this);
@@ -30,6 +29,7 @@ export default class ChessBoard {
   }
 
   initBoard() {
+    this.board = [];
     for (let x = 0; x < this.num; x++) {
       this.board[x] = [];
       for (let y = 0; y < this.num; y++) {
@@ -37,6 +37,7 @@ export default class ChessBoard {
       }
     }
     this.brush.drawBoard(this.num, this.gridWidth);
+    this.bindEvents();
   }
 
   bindEvents() {
@@ -144,7 +145,7 @@ export default class ChessBoard {
     if (count >= 4) {
       players.map((player) => {
         if(player.value === colNum) {
-          alert(`${player.name}获胜`);
+          showModal(`${player.name}获胜`);
         }
       });
       this.canvas.removeEventListener('click', this.calculatePiecePosition);
