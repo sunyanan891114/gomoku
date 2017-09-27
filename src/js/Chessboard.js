@@ -16,12 +16,13 @@ export default class ChessBoard {
     if (this.isSingleMode()) {
       this.computerAI = new computerAI(n);
     }
-    this.initBoard();
     this.isLx = this.isLx.bind(this);
     this.isLy = this.isLy.bind(this);
     this.isX = this.isX.bind(this);
     this.isY = this.isY.bind(this);
     this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
+
+    this.initBoard();
   }
 
   isSingleMode() {
@@ -41,7 +42,7 @@ export default class ChessBoard {
   }
 
   bindEvents() {
-    this.canvas.addEventListener('click', this.calculatePiecePosition.bind(this));
+    this.canvas.addEventListener('click', this.calculatePiecePosition);
   }
 
   isPieceInBoard(x, y) {
