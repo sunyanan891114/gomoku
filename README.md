@@ -1,6 +1,6 @@
 # GOMOKU
 
-###Install
+### Install
 
 node > 6.0.0
 
@@ -8,19 +8,19 @@ node > 6.0.0
 npm install
 ```
 
-###Locally development
+### Locally development
 
 ```bash
 npm start
 ```
 
-###Build
+### Build
 
 ```bash
 npm run build
 ```
 
-###Deploy to github
+### Deploy to github
 
 ```bash
 npm run deploy
