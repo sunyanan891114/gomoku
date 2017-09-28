@@ -1,5 +1,9 @@
 # GOMOKU
 
+### Preview
+
+![](src/asset/preview.png)
+
 Have fun !!! 
 Play on [online](https://sunyanan891114.github.io/gomoku/)
 
