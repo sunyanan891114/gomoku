@@ -86,9 +86,13 @@ header > h1 {
   }
 }
 
-#regret {
+#regret, #cancel-regret {
   @include button;
   position: absolute;
-  bottom: 20px;
+  bottom: 80px;
   left: calc(50% + 301px);
+}
+
+#cancel-regret {
+  bottom: 20px;
 }

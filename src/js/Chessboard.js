@@ -10,6 +10,7 @@ export default class ChessBoard {
     this.step = 0;
     this.canvas = document.getElementById('chessboard-canvas');
     this.regretButton = document.getElementById('regret');
+    this.cancelRegretButton = document.getElementById('cancel-regret');
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
@@ -24,6 +25,7 @@ export default class ChessBoard {
     this.isY = this.isY.bind(this);
     this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
     this.regret = this.regret.bind(this);
+    this.cancelRegret = this.cancelRegret.bind(this);
     this.initBoard();
   }
 
@@ -46,15 +48,26 @@ export default class ChessBoard {
   bindEvents() {
     this.canvas.addEventListener('click', this.calculatePiecePosition);
     this.regretButton.addEventListener('click', this.regret);
+    this.cancelRegretButton.addEventListener('click', this.cancelRegret);
   }
 
   regret() {
-    if(this.isSingleMode()) {
-      this.resetPiece();
-      this.resetPiece();
-    } else {
+    if (this.isSingleMode()) {
       this.resetPiece();
     }
+    this.resetPiece();
+  }
+
+  cancelRegret() {
+    let pieceComputer = this.history[this.step + 1];
+    let piecePlayer = this.history[this.step + 2];
+    if (this.isSingleMode()) {
+      this.setPiece(pieceComputer.x, pieceComputer.y);
+      this.setPiece(piecePlayer.x, piecePlayer.y);
+    } else {
+      this.setPiece(pieceComputer.x, pieceComputer.y);
+    }
+    this.cancelRegretButton.disabled = true;
   }
 
   resetPiece() {
@@ -63,6 +76,7 @@ export default class ChessBoard {
     this.board[piece.x][piece.y] = 0;
     this.step--;
     if (this.step === 0) this.regretButton.disabled = true;
+    this.cancelRegretButton.disabled = false;
   }
 
   isPieceInBoard(x, y) {
@@ -78,28 +92,24 @@ export default class ChessBoard {
     const cx = Math.round(x / this.gridWidth),
       cy = Math.round(y / this.gridWidth);
     if (this.board[cx][cy] === 0) {
-      this.completeBoard(cx, cy);
+      this.setPiece(cx, cy);
       if (this.isSingleMode()) {
         const computerPiece = this.computerAI.nextStep(this.board);
-        this.completeBoard(computerPiece.x, computerPiece.y);
+        this.setPiece(computerPiece.x, computerPiece.y);
       }
     } else {
       alert("当前位置已有棋子，请不要重复落子哦");
     }
   }
 
-  completeBoard(cx, cy) {
-    this.step += 1;
+  setPiece(cx, cy) {
+    this.step++;
     const player = players[this.step % 2];
     this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
-    this.setPiece(cx, cy, player.value);
-    this.history[this.step] = {x: cx, y:cy};
+    this.board[cx][cy] = player.value;
+    this.judge(cx, cy, player.value);
+    this.history[this.step] = {x: cx, y: cy};
     this.regretButton.disabled = false;
-  }
-
-  setPiece(cx, cy, value) {
-    this.board[cx][cy] = value;
-    this.judge(cx, cy, value);
   }
 
   judgeAlgorithms() {
@@ -113,10 +123,14 @@ export default class ChessBoard {
   }
 
   calculatePieceLine(flag, count, pieceValue, calculateValue) {
-    if (!flag) return { count, flag };
-    if (pieceValue === calculateValue) { count++; }
-    else { flag = false; }
-    return { count, flag };
+    if (!flag) return {count, flag};
+    if (pieceValue === calculateValue) {
+      count++;
+    }
+    else {
+      flag = false;
+    }
+    return {count, flag};
   }
 
   getDynamicPosition(x, y) {
@@ -145,29 +159,53 @@ export default class ChessBoard {
   }
 
   isX(colNum, x, y) {
-    this.getMaxCount((x, i) => {return x - i}, this.valueGenerator,
-      (x, i) => {return x + i}, this.valueGenerator, x, y, colNum);
+    this.getMaxCount((x, i) => {
+        return x - i
+      }, this.valueGenerator,
+      (x, i) => {
+        return x + i
+      }, this.valueGenerator, x, y, colNum);
   }
 
   isY(colNum, x, y) {
-    this.getMaxCount(this.valueGenerator, (x, i) => {return x - i}, this.valueGenerator,
-      (x, i) => {return x + i}, x, y, colNum);
+    this.getMaxCount(this.valueGenerator, (x, i) => {
+        return x - i
+      }, this.valueGenerator,
+      (x, i) => {
+        return x + i
+      }, x, y, colNum);
   }
 
   isLx(colNum, x, y) {
-    this.getMaxCount((x, i) => {return x - i}, (y, i) => {return y - i}, (x, i) => {return x + i},
-      (y, i) => {return y + i}, x, y, colNum);
+    this.getMaxCount((x, i) => {
+        return x - i
+      }, (y, i) => {
+        return y - i
+      }, (x, i) => {
+        return x + i
+      },
+      (y, i) => {
+        return y + i
+      }, x, y, colNum);
   }
 
   isLy(colNum, x, y) {
-    this.getMaxCount((x, i) => {return x - i}, (y, i) => {return y + i}, (x, i) => {return x + i},
-      (y, i) => {return y - i}, x, y, colNum);
+    this.getMaxCount((x, i) => {
+        return x - i
+      }, (y, i) => {
+        return y + i
+      }, (x, i) => {
+        return x + i
+      },
+      (y, i) => {
+        return y - i
+      }, x, y, colNum);
   }
 
   success(count, colNum) {
     if (count >= 4) {
       players.map((player) => {
-        if(player.value === colNum) {
+        if (player.value === colNum) {
           showModal(`${player.name}获胜`);
         }
       });
