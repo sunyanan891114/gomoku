@@ -2,7 +2,9 @@ export default class drawHelper {
 
   constructor(canvas) {
     this.ctx = canvas.getContext('2d');
-    this.ctx.strokeStyle = "#000000";
+    this.ctx.strokeStyle = 'rgba(0,0,0,1)';
+    this.ctx.fillStyle = 'rgba(0,0,0,1)';
+    this.ctx.lineWidth = 1.5;
   }
 
   drawBoard(num, gridWidth) {
@@ -26,12 +28,14 @@ export default class drawHelper {
   }
 
   clearPiece(cx, cy, gridWidth) {
+    const startX = cx * gridWidth - gridWidth / 2,
+      startY = cy * gridWidth - gridWidth / 2;
     this.ctx.beginPath();
-    this.ctx.clearRect(cx * gridWidth - gridWidth / 2, cy * gridWidth- gridWidth / 2, gridWidth, gridWidth);
-    this.ctx.moveTo(cx * gridWidth - gridWidth / 2, cy * gridWidth);
-    this.ctx.lineTo(cx * gridWidth + gridWidth / 2, cy * gridWidth);
-    this.ctx.moveTo(cx * gridWidth, cy * gridWidth - gridWidth / 2);
-    this.ctx.lineTo(cx * gridWidth, cy * gridWidth + gridWidth / 2);
+    this.ctx.clearRect(startX, startY, gridWidth, gridWidth);
+    this.ctx.moveTo(startX - 0.5, cy * gridWidth);
+    this.ctx.lineTo(startX + gridWidth + 0.5, cy * gridWidth);
+    this.ctx.moveTo(cx * gridWidth, startY - 0.5);
+    this.ctx.lineTo(cx * gridWidth, startY + gridWidth + 0.5);
     this.ctx.stroke();
   }
 }
