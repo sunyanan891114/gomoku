@@ -1,5 +1,8 @@
 # GOMOKU
 
+Have fun !!! 
+Play on [online](https://sunyanan891114.github.io/gomoku/)
+
 ### Install
 
 node > 6.0.0
@@ -25,5 +28,3 @@ npm run build
 ```bash
 npm run deploy
 ```
-
-Play on [online](https://sunyanan891114.github.io/gomoku/)
