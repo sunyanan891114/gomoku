@@ -54,7 +54,9 @@ header > h1 {
 }
 
 #chessboard-canvas {
-  background: url(../asset/chessboard.jpg);
+  background: rgba(227, 198, 156, 1);
+  filter: blur(5px);
+  transition: 0.5s -webkit-filter linear;
   border: 4px solid #000;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   width: 525px;
