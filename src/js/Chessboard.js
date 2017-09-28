@@ -9,6 +9,7 @@ export default class ChessBoard {
     this.gridWidth = 35;
     this.step = 0;
     this.canvas = document.getElementById('chessboard-canvas');
+    this.regretButton = document.getElementById('regret');
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.brush = new drawHelper(this.canvas);
@@ -44,7 +45,7 @@ export default class ChessBoard {
 
   bindEvents() {
     this.canvas.addEventListener('click', this.calculatePiecePosition);
-    document.getElementById('regret').addEventListener('click', this.regret);
+    this.regretButton.addEventListener('click', this.regret);
   }
 
   regret() {
@@ -61,6 +62,7 @@ export default class ChessBoard {
     this.brush.clearPiece(piece.x, piece.y, this.gridWidth);
     this.board[piece.x][piece.y] = 0;
     this.step--;
+    if (this.step === 0) this.regretButton.disabled = true;
   }
 
   isPieceInBoard(x, y) {
@@ -91,7 +93,8 @@ export default class ChessBoard {
     const player = players[this.step % 2];
     this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
     this.setPiece(cx, cy, player.value);
-    this.history[this.step] = {x: cx, y:cy}
+    this.history[this.step] = {x: cx, y:cy};
+    this.regretButton.disabled = false;
   }
 
   setPiece(cx, cy, value) {
@@ -169,6 +172,7 @@ export default class ChessBoard {
         }
       });
       this.canvas.removeEventListener('click', this.calculatePiecePosition);
+      this.regretButton.addEventListener('click', this.regret);
     }
   }
 }
