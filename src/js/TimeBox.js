@@ -9,8 +9,7 @@ export default class TimeBox {
   }
 
   startTime() {
-    this.interval = setInterval(this.timer, 100);
-    console.log('start time: ' + this.interval);
+    this.interval = setInterval(this.timer, 10);
   }
 
   timer() {
@@ -26,7 +25,6 @@ export default class TimeBox {
   }
 
   stopTime() {
-    console.log('stop time: ' + this.interval);
     window.clearInterval(this.interval);
   }
 }

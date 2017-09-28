@@ -12,9 +12,12 @@ export default class ChessBoard {
     this.canvas = document.getElementById('chessboard-canvas');
     this.regretButton = document.getElementById('regret');
     this.cancelRegretButton = document.getElementById('cancel-regret');
+    this.restartButton = document.getElementById('restart');
+    this.restartButton.disabled = false;
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
     this.resetStep = 0;
+    this.over = false;
     this.brush = new drawHelper(this.canvas);
     this.mode = mode;
     this.history = [];
@@ -25,13 +28,6 @@ export default class ChessBoard {
       black: new TimeBox('black-timer'),
       white: new TimeBox('white-timer')
     };
-    this.isLx = this.isLx.bind(this);
-    this.isLy = this.isLy.bind(this);
-    this.isX = this.isX.bind(this);
-    this.isY = this.isY.bind(this);
-    this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
-    this.regret = this.regret.bind(this);
-    this.cancelRegret = this.cancelRegret.bind(this);
     this.initBoard();
   }
 
@@ -52,9 +48,18 @@ export default class ChessBoard {
   }
 
   bindEvents() {
+    this.isLx = this.isLx.bind(this);
+    this.isLy = this.isLy.bind(this);
+    this.isX = this.isX.bind(this);
+    this.isY = this.isY.bind(this);
+    this.calculatePiecePosition = this.calculatePiecePosition.bind(this);
+    this.regret = this.regret.bind(this);
+    this.cancelRegret = this.cancelRegret.bind(this);
+    this.gameOver = this.gameOver.bind(this);
     this.canvas.addEventListener('click', this.calculatePiecePosition);
     this.regretButton.addEventListener('click', this.regret);
     this.cancelRegretButton.addEventListener('click', this.cancelRegret);
+    this.restartButton.addEventListener('click', this.gameOver);
   }
 
   regret() {
@@ -70,7 +75,7 @@ export default class ChessBoard {
     if (this.isSingleMode()) {
       this.setPiece(pieceComputer.x, pieceComputer.y);
       this.setPiece(piecePlayer.x, piecePlayer.y);
-      this.resetStep --;
+      this.resetStep--;
     } else {
       this.setPiece(pieceComputer.x, pieceComputer.y);
     }
@@ -102,8 +107,10 @@ export default class ChessBoard {
     const cx = Math.round(x / this.gridWidth),
       cy = Math.round(y / this.gridWidth);
     if (this.board[cx][cy] === 0) {
+      this.resetStep = 0;
+      this.cancelRegretButton.disabled = true;
       this.setPiece(cx, cy);
-      if (this.isSingleMode()) {
+      if (this.isSingleMode() && !this.over) {
         const computerPiece = this.computerAI.nextStep(this.board);
         setTimeout(() => {
           this.setPiece(computerPiece.x, computerPiece.y);
@@ -121,10 +128,7 @@ export default class ChessBoard {
     this.board[cx][cy] = player.value;
     this.history[this.step] = {x: cx, y: cy};
     this.regretButton.disabled = false;
-    console.log('-----------------------------');
-    console.log(player.id);
     this.timeBox[player.id].startTime();
-    console.log(player.otherId);
     this.timeBox[player.otherId].stopTime();
     this.judge(cx, cy, player.value);
   }
@@ -222,16 +226,30 @@ export default class ChessBoard {
   success(count, colNum) {
     if (count >= 4) {
       players.map((player) => {
-        this.timeBox[player.id].stopTime();
         if (player.value === colNum) {
-          showModal(`${player.name}获胜`);
+          this.gameOver(`${player.name}获胜`);
         }
       });
-      this.canvas.removeEventListener('click', this.calculatePiecePosition);
-      this.regretButton.removeEventListener('click', this.regret);
-      this.cancelRegretButton.removeEventListener('click', this.cancelRegret);
-      this.regretButton.disabled = true;
-      this.cancelRegretButton.disabled = true;
     }
+  }
+
+  gameOver(text = '请选择游戏模式') {
+    this.over = true;
+    if (text.type === 'click') text = '请选择游戏模式';
+    showModal(text);
+    this.clearButtons();
+    players.map((player) => {
+      this.timeBox[player.id].stopTime();
+    });
+  }
+
+  clearButtons() {
+    this.canvas.removeEventListener('click', this.calculatePiecePosition);
+    this.regretButton.removeEventListener('click', this.regret);
+    this.cancelRegretButton.removeEventListener('click', this.cancelRegret);
+    this.restartButton.removeEventListener('click', this.gameOver);
+    this.regretButton.disabled = true;
+    this.cancelRegretButton.disabled = true;
+    this.restartButton.disabled = true;
   }
 }

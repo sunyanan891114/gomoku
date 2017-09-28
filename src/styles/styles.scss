@@ -6,7 +6,7 @@ body {
 }
 
 header {
-  background-color: #ebcca2;
+  background-color: #cc6600;
   padding: 14px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   margin-bottom: 20px;
@@ -25,7 +25,7 @@ header > h1 {
 
 @mixin button {
   padding: 10px 20px;
-  background: #ebcca2;
+  background: #cc6600;
   border: none;
   color: #fff;
   font-size: 1rem;
@@ -34,7 +34,7 @@ header > h1 {
   outline: none;
 
   &:hover {
-    background: #edd8b7;
+    background: #cccc33;
   }
 
   &:disabled {
@@ -92,16 +92,21 @@ header > h1 {
   }
 }
 
-#regret, #cancel-regret {
+#regret, #cancel-regret, #restart {
   @include button;
   position: absolute;
-  bottom: 80px;
+  bottom: 140px;
   left: calc(50% + 301px);
   width: 150px;
 }
 
 #cancel-regret {
+  bottom: 80px;
+}
+
+#restart {
   bottom: 20px;
+  background: #336699;
 }
 
 .timebox {
