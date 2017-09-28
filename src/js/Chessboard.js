@@ -99,7 +99,9 @@ export default class ChessBoard {
       this.setPiece(cx, cy);
       if (this.isSingleMode()) {
         const computerPiece = this.computerAI.nextStep(this.board);
-        this.setPiece(computerPiece.x, computerPiece.y);
+        setTimeout(() => {
+          this.setPiece(computerPiece.x, computerPiece.y);
+        }, 100);
       }
     } else {
       alert("当前位置已有棋子，请不要重复落子哦");
