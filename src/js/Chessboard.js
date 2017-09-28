@@ -2,6 +2,7 @@ import drawHelper from './drawHelper';
 import players from './playerConfig';
 import computerAI from './computerAI';
 import {showModal} from './modal';
+import TimeBox from './TimeBox';
 
 export default class ChessBoard {
   constructor(n, mode) {
@@ -20,6 +21,10 @@ export default class ChessBoard {
     if (this.isSingleMode()) {
       this.computerAI = new computerAI(n);
     }
+    this.timeBox = {
+      black: new TimeBox('black-timer'),
+      white: new TimeBox('white-timer')
+    };
     this.isLx = this.isLx.bind(this);
     this.isLy = this.isLy.bind(this);
     this.isX = this.isX.bind(this);
@@ -114,9 +119,14 @@ export default class ChessBoard {
     const player = players[this.step % 2];
     this.brush.drawPiece(cx, cy, player.image, this.gridWidth);
     this.board[cx][cy] = player.value;
-    this.judge(cx, cy, player.value);
     this.history[this.step] = {x: cx, y: cy};
     this.regretButton.disabled = false;
+    console.log('-----------------------------');
+    console.log(player.id);
+    this.timeBox[player.id].startTime();
+    console.log(player.otherId);
+    this.timeBox[player.otherId].stopTime();
+    this.judge(cx, cy, player.value);
   }
 
   judgeAlgorithms() {
@@ -212,12 +222,16 @@ export default class ChessBoard {
   success(count, colNum) {
     if (count >= 4) {
       players.map((player) => {
+        this.timeBox[player.id].stopTime();
         if (player.value === colNum) {
           showModal(`${player.name}获胜`);
         }
       });
       this.canvas.removeEventListener('click', this.calculatePiecePosition);
-      this.regretButton.addEventListener('click', this.regret);
+      this.regretButton.removeEventListener('click', this.regret);
+      this.cancelRegretButton.removeEventListener('click', this.cancelRegret);
+      this.regretButton.disabled = true;
+      this.cancelRegretButton.disabled = true;
     }
   }
 }

@@ -11,6 +11,14 @@
 </header>
 <main class="chessboard">
   <canvas id="chessboard-canvas"></canvas>
+  <div class="timebox black">
+    <div class="timebox__name">黑棋</div>
+    <input class="timebox__time" readonly value="00 : 00 : 00" id="black-timer"/>
+  </div>
+  <div class="timebox white">
+    <div class="timebox__name">白棋</div>
+    <input class="timebox__time" readonly value="00 : 00 : 00" id="white-timer"/>
+  </div>
   <button id="regret" disabled>悔棋</button>
   <button id="cancel-regret" disabled>撤销悔棋</button>
   <div class="modal active">
