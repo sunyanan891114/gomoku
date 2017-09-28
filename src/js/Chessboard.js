@@ -91,6 +91,7 @@ export default class ChessBoard {
   calculatePiecePosition(e) {
     const x = e.offsetX, y = e.offsetY;
     if (!this.isPieceInBoard(x, y)) {
+      alert("当前已经是棋盘边缘了");
       return;
     }
     const cx = Math.round(x / this.gridWidth),
