@@ -13,6 +13,7 @@ export default class ChessBoard {
     this.cancelRegretButton = document.getElementById('cancel-regret');
     this.canvas.width = this.gridWidth * this.num;
     this.canvas.height = this.gridWidth * this.num;
+    this.resetStep = 0;
     this.brush = new drawHelper(this.canvas);
     this.mode = mode;
     this.history = [];
@@ -64,10 +65,12 @@ export default class ChessBoard {
     if (this.isSingleMode()) {
       this.setPiece(pieceComputer.x, pieceComputer.y);
       this.setPiece(piecePlayer.x, piecePlayer.y);
+      this.resetStep --;
     } else {
       this.setPiece(pieceComputer.x, pieceComputer.y);
     }
-    this.cancelRegretButton.disabled = true;
+    this.resetStep--;
+    if (this.resetStep == 0) this.cancelRegretButton.disabled = true;
   }
 
   resetPiece() {
@@ -77,6 +80,7 @@ export default class ChessBoard {
     this.step--;
     if (this.step === 0) this.regretButton.disabled = true;
     this.cancelRegretButton.disabled = false;
+    this.resetStep++;
   }
 
   isPieceInBoard(x, y) {
